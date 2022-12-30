@@ -16,5 +16,11 @@
     "companyId": "wvdB54Gqbdp_NZTXK9Tue",
     "title": "Full-Stack Developer",
     "description": "We are looking for a Full-Stack Developer familiar with Node.js, Express, and React."
+  },
+  {
+    "id": "nHLAW0qbb5s9x-lUrKrNJ",
+    "title": "Senior DevOps Engineer",
+    "companyId": "wvdB54Gqbdp_NZTXK9Tue",
+    "description": "We need somebody to restart the servers when they fall over."
   }
 ]
