@@ -4,7 +4,7 @@ import { getAccessToken } from '../auth';
 
 const GRAPHQL_URL = 'http://localhost:9000/graphql';
 
-const client = new ApolloClient ({
+export const client = new ApolloClient ({
     uri: GRAPHQL_URL,
     cache: new InMemoryCache(),
     // defaultOptions: {
@@ -39,6 +39,19 @@ const JOB_QUERY = gql`
         }
     }
     ${JOB_DETAIL_FRAGMENT}
+`;
+
+export const JOBS_QUERY = gql`
+    query Jobs {
+        jobs {
+            id,
+            title,
+            company {
+                id
+                name
+            }
+        }
+    }
 `;
 
 export async function createJob(input) {
@@ -102,23 +115,4 @@ export async function getJob(id) {
     // const { job } = await request(GRAPHQL_URL, query, variables);
     const { data: { job } } = await client.query({ query: JOB_QUERY, variables });
     return job;
-};
-
-export async function getJobs() {
-    const query = gql`
-        query Jobs {
-            jobs {
-                id,
-                title,
-                company {
-                    id
-                    name
-                }
-            }
-        }
-    `;
-
-    // const { jobs } = await request(GRAPHQL_URL, query);
-    const { data: { jobs } } = await client.query({ query, fetchPolicy: 'network-only' });
-    return jobs;
 };
