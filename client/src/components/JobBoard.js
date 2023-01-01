@@ -10,7 +10,10 @@ function JobBoard() {
   useEffect(() => {
     // getJobs().then((jobs) => setJobs(jobs));
     getJobs().then(setJobs)
-      .catch((err) => setError(true));
+      .catch((err) => {
+        console.error(err);
+        setError(true);
+      });
   }, []);
 
   if (error) return <p>Sorry, something went wrong.</p>
