@@ -1,23 +1,10 @@
 import { ApolloClient, gql, InMemoryCache } from '@apollo/client';
-// import { request } from 'graphql-request';
-import { getAccessToken } from '../auth';
 
 const GRAPHQL_URL = 'http://localhost:9000/graphql';
 
 export const client = new ApolloClient ({
     uri: GRAPHQL_URL,
     cache: new InMemoryCache(),
-    // defaultOptions: {
-    //     query: {
-    //         fetchPolicy: 'network-only',
-    //     },
-    //     mutate: {
-    //         fetchPolicy: 'network-only',
-    //     },
-    //     watchQuery: {
-    //         fetchPolicy: 'network-only',
-    //     }
-    // }
 });
 
 const JOB_DETAIL_FRAGMENT = gql`
@@ -32,7 +19,7 @@ const JOB_DETAIL_FRAGMENT = gql`
     }
 `;
 
-const JOB_QUERY = gql`
+export const JOB_QUERY = gql`
     query Job($id: ID!) {
         job(id: $id) {
             ...JobDetail
@@ -54,65 +41,25 @@ export const JOBS_QUERY = gql`
     }
 `;
 
-export async function createJob(input) {
-    const mutation = gql`
-        mutation CreateJobMutation($input: CreateJobInput!) {
-            job: createJob(input: $input) {
-                ...JobDetail
-            }
-        }
-        ${JOB_DETAIL_FRAGMENT}
-    `;
-
-    const variables = { input };
-    const context = {
-        headers: { 'Authorization': 'Bearer ' + getAccessToken() },
-    };
-
-    // const { job } = await request(GRAPHQL_URL, query, variables, headers);
-
-    const { data: { job }} = await client.mutate({ 
-        mutation, 
-        variables, 
-        context,
-        // BELOW WE WRITE DATA DIRECTLY INTO THE CACHE AFTER THE MUTATION WAS SUCCESSFUL
-        update: (cache, { data: { job }}) => {
-            cache.writeQuery({
-                query: JOB_QUERY,
-                variables: { id: job.id },
-                data: { job },
-            });
-        },
-
-    });
-
-    return job;
-};
-
-export async function getCompany(id) {
-    const query = gql`
-        query Company($id: ID!) {
-            company(id: $id) {
+export const COMPANY_QUERY = gql`
+    query Company($id: ID!) {
+        company(id: $id) {
+            id
+            name
+            description
+            jobs {
                 id
-                name
-                description
-                jobs {
-                    id
-                    title
-                }
+                title
             }
         }
-    `;
+    }
+`;
 
-    const variables = { id };
-    // const { company } = await request(GRAPHQL_URL, query, variables);
-    const { data: { company }} = await client.query({ query, variables });
-    return company;
-};
-
-export async function getJob(id) {
-    const variables = { id };
-    // const { job } = await request(GRAPHQL_URL, query, variables);
-    const { data: { job } } = await client.query({ query: JOB_QUERY, variables });
-    return job;
-};
+export const CREATE_JOB_MUTATION = gql`
+    mutation CreateJobMutation($input: CreateJobInput!) {
+        job: createJob(input: $input) {
+            ...JobDetail
+        }
+    }
+    ${JOB_DETAIL_FRAGMENT}
+`;

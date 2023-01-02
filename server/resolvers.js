@@ -1,8 +1,12 @@
-import { User, Company, Job } from "./db.js"; 
+import { Company, Job } from "./db.js"; 
 
 function rejectIf(condition) {
     if (condition) throw new Error('Unauthorized');
-}
+};
+
+// function delay(ms) {
+//     return new Promise((resolve) => setTimeout(resolve, ms))
+// };
 
 export const resolvers = {
     Query: {
@@ -11,8 +15,9 @@ export const resolvers = {
         jobs: () => Job.findAll(),
     },
     Mutation: {
-        createJob: (_root, { input }, { user }) => {
+        createJob: async (_root, { input }, { user }) => {
             rejectIf(!user);
+            // await delay(2000);
             return Job.create({ ...input, companyId: user.companyId });
         },
         deleteJob: async (_root, { id }, { user }) => {
